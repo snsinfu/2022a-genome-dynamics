@@ -21,6 +21,12 @@ The project covers:
 
 ## Directories
 
+- [1-hic](1-hic): Preparation of chromosome contact maps. Downloads and preprocesses Hi-C dataset.
+- [2-signal](2-signal): Analysis of the contact maps. Computes compartment signal and NCI.
+- [3-sim-1kb](3-sim-1kb): Chromatin dynamics at 1kb resolution. Incorporates kinetic HP-1 attraction and cohesin looping. Estimates effective interaction among 100kb chromatin regions using PRISM theory.
+- [4-sim-ab](4-sim-ab): Simulation of phase separation in purely repulsive polymer blend.
+- [5-sim-genome](5-sim-genome): Simulation of human genome in ana/telophase and interphase.
+
 ## License
 
 MIT License
