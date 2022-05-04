@@ -1,0 +1,4 @@
+#!/bin/sh
+source activate data-analysis
+export PYTHONPATH="$(dirname "$0")/../src"
+exec python -m compute_interactions "$@"
