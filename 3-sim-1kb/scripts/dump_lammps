@@ -1,0 +1,4 @@
+#!/bin/bash
+source activate data-analysis-v2
+export PYTHONPATH="$(cd "$(dirname "$0")/../src"; pwd)"
+exec python -m dump_lammps "$@"
