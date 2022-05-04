@@ -1,0 +1,9 @@
+#!/usr/bin/bash
+source activate data-analysis
+set -eu
+
+D="$(cd "$(dirname "$0")/.." && pwd)"
+N="$(basename "$0")"
+export PYTHONPATH="$D/libsrc"
+
+exec python -m "$N" "$@"

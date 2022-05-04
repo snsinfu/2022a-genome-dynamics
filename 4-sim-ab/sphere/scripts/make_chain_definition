@@ -1,0 +1,38 @@
+#!/bin/sh
+
+mode=$1
+chain_length=$2
+chain_count=$3
+
+printf "chain\tA\tB\n"
+
+generate_pure() {
+    a=1
+    b=0
+    for chain in $(seq ${chain_count}); do
+        chain="ch${chain}"
+        a=$((1 - a))
+        b=$((1 - b))
+        for i in $(seq ${chain_length}); do
+            printf "%s\t%g\t%g\n" ${chain} ${a} ${b}
+        done
+    done
+}
+
+generate_semi() {
+    for chain in $(seq ${chain_count}); do
+        chain="ch${chain}"
+        for i in $(seq ${chain_length}); do
+            if [ ${i} -le $((chain_length / 2)) ]; then
+                a=1
+                b=0
+            else
+                a=0
+                b=1
+            fi
+            printf "%s\t%g\t%g\n" ${chain} ${a} ${b}
+        done
+    done
+}
+
+generate_${mode}

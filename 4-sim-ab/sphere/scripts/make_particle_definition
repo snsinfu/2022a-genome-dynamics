@@ -1,0 +1,17 @@
+#!/bin/sh
+
+particle_count=$1
+
+printf "chain\tA\tB\n"
+
+a=1
+b=0
+
+for i in $(seq ${particle_count}); do
+    if [ ${i} -eq $((particle_count / 2)) ]; then
+        a=0
+        b=1
+    fi
+    chain="p${i}"
+    printf "%s\t%g\t%g\n" ${chain} ${a} ${b}
+done
