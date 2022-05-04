@@ -1,0 +1,9 @@
+#!/usr/bin/bash
+
+source activate data-analysis
+set -eu
+
+base="$(realpath "$(dirname "$0")/..")"
+export PYTHONPATH="${base}/src"
+
+python -m power_law "$@"

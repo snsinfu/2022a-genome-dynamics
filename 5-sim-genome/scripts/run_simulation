@@ -1,0 +1,26 @@
+#!/usr/bin/bash
+
+source activate data-analysis
+set -eu
+
+base="$(realpath "$(dirname "$0")/..")"
+seed_arg=""
+
+while getopts s: opt; do
+    case ${opt} in
+    s)  seed_arg="--seed ${OPTARG}"
+        ;;
+    *)  exit 1
+    esac
+done
+
+shift $((OPTIND - 1))
+
+config="$1"
+data="$2"
+output="$3"
+
+${base}/scripts/prepare        ${seed_arg} ${config} ${data} ${output}
+${base}/simulation_spindle     ${output}
+${base}/scripts/refine         ${output}
+${base}/simulation_interphase  ${output}

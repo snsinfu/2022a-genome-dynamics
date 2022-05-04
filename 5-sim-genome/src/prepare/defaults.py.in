@@ -1,0 +1,10 @@
+from collections import OrderedDict
+
+
+DEFAULT_CONFIG = OrderedDict({
+#define X(var, type, value) #var: value,
+#define V(...)              [__VA_ARGS__]
+#include "../config_entries.inc"
+#undef X
+#undef V
+})
