@@ -1,0 +1,24 @@
+[submodule "submodules/github.com/snsinfu/cxx-spline"]
+	path = submodules/github.com/snsinfu/cxx-spline
+	url = https://github.com/snsinfu/cxx-spline
+[submodule "submodules/github.com/snsinfu/cxx-getopt"]
+	path = submodules/github.com/snsinfu/cxx-getopt
+	url = https://github.com/snsinfu/cxx-getopt
+[submodule "submodules/github.com/snsinfu/h5"]
+	path = submodules/github.com/snsinfu/h5
+	url = https://github.com/snsinfu/h5
+[submodule "submodules/github.com/snsinfu/micromd"]
+	path = submodules/github.com/snsinfu/micromd
+	url = https://github.com/snsinfu/micromd
+[submodule "submodules/github.com/nlohmann/json"]
+	path = submodules/github.com/nlohmann/json
+	url = https://github.com/nlohmann/json
+[submodule "submodules/github.com/danielaparker/jsoncons"]
+	path = submodules/github.com/danielaparker/jsoncons
+	url = https://github.com/danielaparker/jsoncons
+[submodule "submodules/github.com/docopt/docopt.cpp"]
+	path = submodules/github.com/docopt/docopt.cpp
+	url = https://github.com/docopt/docopt.cpp
+[submodule "submodules/github.com/BlueBrain/HighFive"]
+	path = submodules/github.com/BlueBrain/HighFive
+	url = https://github.com/BlueBrain/HighFive
