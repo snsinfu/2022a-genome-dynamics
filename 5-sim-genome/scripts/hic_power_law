@@ -1,0 +1,133 @@
+#!/usr/bin/env python
+
+import argparse
+import os
+import signal
+import sys
+import traceback
+
+from typing import Any, Dict
+
+import h5py
+import numpy as np
+import scipy.sparse
+
+
+BLACKLISTED_CHROMS = {"X", "Y", "MT"}
+MIN_CHUNK_SIZE = 0x40000
+
+
+def main() -> None:
+    run(**parse_args())
+
+
+def parse_args() -> Dict[str, Any]:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--binsize", type=int, default=100_000)
+    parser.add_argument("--normalize", type=str, default="RAW")
+    parser.add_argument("mcool", type=str)
+    return vars(parser.parse_args())
+
+
+def run(*, mcool: str, binsize: int, normalize: str) -> None:
+    with h5py.File(mcool, "r") as store:
+        dataset = store[f"resolutions/{binsize}"]
+        mean_contacts = collect_mean_contacts(dataset, normalize)
+        distances = np.arange(len(mean_contacts)) * binsize
+
+        print("distance\tcontacts")
+        for d, c in zip(distances, mean_contacts):
+            print(f"{d:d}\t{c:g}")
+
+
+def collect_mean_contacts(dataset: h5py.Group, norm_method: str) -> np.ndarray:
+    chroms = dataset["bins/chrom"][:]
+    chrom_codebook = h5py.check_dtype(enum=chroms.dtype)
+    blacklisted_chroms = [chrom_codebook[name] for name in BLACKLISTED_CHROMS]
+
+    _, chrom_bin_counts = np.unique(chroms, return_counts=True)
+    max_size = max(chrom_bin_counts)
+
+    contact_sums = np.zeros(max_size)
+    contact_counts = np.zeros(max_size)
+
+    if norm_method == "RAW":
+        norm_vector = np.ones(len(chroms))
+    else:
+        norm_vector = dataset[f"bins/{norm_method}"][:]
+
+    bin1_samples = dataset["pixels/bin1_id"]
+    bin2_samples = dataset["pixels/bin2_id"]
+    count_samples = dataset["pixels/count"]
+    chunk_rows = determine_chunk_size(count_samples)
+    ones = np.ones(chunk_rows)
+
+    for chunk_beg in range(0, count_samples.shape[0], chunk_rows):
+        chunk_end = min(chunk_beg + chunk_rows, count_samples.shape[0])
+
+        ii = bin1_samples[chunk_beg:chunk_end]
+        jj = bin2_samples[chunk_beg:chunk_end]
+        cc = count_samples[chunk_beg:chunk_end]
+
+        # Select cis contacts.
+        selector = chroms[ii] == chroms[jj]
+        ii = ii[selector]
+        jj = jj[selector]
+        cc = cc[selector]
+
+        # Mask blacklisted chromosomes.
+        selector = ~np.isin(chroms[ii], blacklisted_chroms)
+        ii = ii[selector]
+        jj = jj[selector]
+        cc = cc[selector]
+
+        assert len(ii) == len(jj) == len(cc)
+
+        if len(cc) == 0:
+            continue
+
+        distances = np.abs(ii - jj)
+        contacts = cc / (norm_vector[ii] * norm_vector[jj])
+
+        # Normalization may produce NaNs. Mask them.
+        selector = ~np.isnan(contacts)
+        distances = distances[selector]
+        contacts = contacts[selector]
+
+        contact_sums += sparse_sum(distances, contacts, size=max_size)
+        contact_counts += sparse_sum(distances, ones[:len(contacts)], size=max_size)
+
+    with np.errstate(divide="ignore", invalid="ignore"):
+        return contact_sums / contact_counts
+
+
+def sparse_sum(indices: np.ndarray, values: np.ndarray, size: int) -> np.ndarray:
+    zeros = np.zeros(len(indices), dtype=np.int32)
+    matrix = scipy.sparse.csc_matrix((values, (indices, zeros)), shape=(size, 1))
+    return matrix.toarray()[:, 0]
+
+
+def determine_chunk_size(dataset: h5py.Dataset) -> int:
+    if dataset.chunks is None:
+        return MIN_CHUNK_SIZE
+
+    size = dataset.chunks[0]
+    if size < MIN_CHUNK_SIZE:
+        size = (MIN_CHUNK_SIZE + size - 1) // size * size
+    return size
+
+
+if __name__ == "__main__":
+    try:
+        main()
+    except KeyboardInterrupt:
+        signal.signal(signal.SIGINT, signal.SIG_DFL)
+        os.kill(os.getpid(), signal.SIGINT)
+    except BrokenPipeError:
+        signal.signal(signal.SIGPIPE, signal.SIG_DFL)
+        os.kill(os.getpid(), signal.SIGPIPE)
+    except SystemExit:
+        raise
+    except:
+        sys.stderr.write(traceback.format_exc())
+        sys.exit(1)

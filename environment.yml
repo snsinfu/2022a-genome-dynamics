@@ -1,0 +1,17 @@
+name: 2022a-genome-dynamics-736aaec3
+
+dependencies:
+  - defaults::python
+  - defaults::h5py
+  - defaults::jupyterlab
+  - defaults::matplotlib
+  - defaults::numba
+  - defaults::numpy
+  - defaults::pandas
+  - defaults::scikit-learn
+  - defaults::scipy
+  - conda-forge::einops
+  - conda-forge::nbresuse
+  - conda-forge::nodejs
+  - bioconda::cooler
+  - bioconda::hic2cool
