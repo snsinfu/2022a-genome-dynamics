@@ -1,7 +1,7 @@
 # Whole-genome chromatin dynamics simulation
 
 Source code for the paper
-**S. Fujishiro and M. Sasai "Generation of dynamic three-dimensional genome structure through phase separation of chromatin" (----)**.
+**S. Fujishiro and M. Sasai "Generation of dynamic three-dimensional genome structure through phase separation of chromatin" (2022)**.
 The project covers:
 
 - Novel annotation of local chromatin using *NCI*, or the diagonal signal of Hi-C contact matrix
@@ -12,9 +12,11 @@ The project covers:
 
 | The paper                   |
 |-----------------------------|
+| [Published version][pub]    |
 | [bioRxiv preprint][bioRxiv] |
 
 [bioRxiv]: https://www.biorxiv.org/content/10.1101/2021.05.06.443035
+[pub]: https://doi.org/10.1073/pnas.2109838119
 
 - [Directories](#directories)
 - [License](#license)
